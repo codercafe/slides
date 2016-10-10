@@ -5,17 +5,20 @@
  * This theme is Copyright (C) 2012 Owen Versteeg, https://github.com/StereotypicalApps. It is MIT licensed.
  * reveal.js is Copyright (C) 2011-2012 Hakim El Hattab, http://hakim.se
  */
-@import url(https://fonts.googleapis.com/css?family=News+Cycle:400,700);
-@import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic);
+
+@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,700);
+@import url(https://fonts.googleapis.com/css?family=Noto+Sans);
+@import url(https://fonts.googleapis.com/css?family=Raleway:400,500);
+@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:400,500,600,700);
 /*********************************************
  * GLOBAL STYLES
  *********************************************/
 body {
-  background: #fff;
-  background-color: #fff; }
+  background: #FCFFF5;
+  background-color: #FCFFF5; }
 
 .reveal {
-  font-family: "Lato", sans-serif;
+  font-family: "Noto Sans", sans-serif;
   font-size: 36px;
   font-weight: normal;
   color: #000; }
@@ -41,8 +44,8 @@ body {
 .reveal h6 {
   margin: 0 0 20px 0;
   color: #000;
-  font-family: "News Cycle", Impact, sans-serif;
-  font-weight: normal;
+  font-family: "Roboto", Impact, sans-serif;
+  font-weight: 300;
   line-height: 1.2;
   letter-spacing: normal;
   text-transform: none;
@@ -50,7 +53,9 @@ body {
   word-wrap: break-word; }
 
 .reveal h1 {
-  font-size: 3.77em; }
+  font-size: 3.77em;
+  background-color: rgba(252, 255, 245, 0.50);
+}
 
 .reveal h2 {
   font-size: 2.11em; }
@@ -141,17 +146,17 @@ body {
 .reveal pre {
   display: block;
   position: relative;
-  width: 90%;
+  width: 100%;
   margin: 20px auto;
   text-align: left;
-  font-size: 0.55em;
-  font-family: monospace;
+  font-size: 0.47em;
+  font-family: "Source Code Pro", monospace;
   line-height: 1.2em;
   word-wrap: break-word;
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3); }
 
 .reveal code {
-  font-family: monospace; }
+  font-family: "Source Code Pro", monospace; }
 
 .reveal pre code {
   display: block;
@@ -182,8 +187,7 @@ body {
 .reveal table td[align="right"] {
   text-align: right; }
 
-.reveal table tbody tr:last-child th,
-.reveal table tbody tr:last-child td {
+.reveal table tr:last-child td {
   border-bottom: none; }
 
 .reveal sup {
@@ -205,14 +209,14 @@ body {
  * LINKS
  *********************************************/
 .reveal a {
-  color: #00008B;
+  color: #29abe2;
   text-decoration: none;
-  -webkit-transition: color .15s ease;
-  -moz-transition: color .15s ease;
-  transition: color .15s ease; }
+  -webkit-transition: color 0.15s ease;
+  -moz-transition: color 0.15s ease;
+  transition: color 0.15s ease; }
 
 .reveal a:hover {
-  color: #0000f1;
+  color: #666;
   text-shadow: none;
   border: none; }
 
@@ -225,18 +229,18 @@ body {
  *********************************************/
 .reveal section img {
   margin: 15px 0px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 4px solid #000;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); }
+  background: #fff;
+  border: 1px solid #666;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);}
 
 .reveal section img.plain {
   border: 0;
   box-shadow: none; }
 
 .reveal a img {
-  -webkit-transition: all .15s linear;
-  -moz-transition: all .15s linear;
-  transition: all .15s linear; }
+  -webkit-transition: all 0.15s linear;
+  -moz-transition: all 0.15s linear;
+  transition: all 0.15s linear; }
 
 .reveal a:hover img {
   background: rgba(255, 255, 255, 0.2);
@@ -248,19 +252,19 @@ body {
  *********************************************/
 .reveal .controls .navigate-left,
 .reveal .controls .navigate-left.enabled {
-  border-right-color: #00008B; }
+  border-right-color: #29abe2; }
 
 .reveal .controls .navigate-right,
 .reveal .controls .navigate-right.enabled {
-  border-left-color: #00008B; }
+  border-left-color: #29abe2; }
 
 .reveal .controls .navigate-up,
 .reveal .controls .navigate-up.enabled {
-  border-bottom-color: #00008B; }
+  border-bottom-color: #29abe2; }
 
 .reveal .controls .navigate-down,
 .reveal .controls .navigate-down.enabled {
-  border-top-color: #00008B; }
+  border-top-color: #29abe2; }
 
 .reveal .controls .navigate-left.enabled:hover {
   border-right-color: #0000f1; }
@@ -281,7 +285,45 @@ body {
   background: rgba(0, 0, 0, 0.2); }
 
 .reveal .progress span {
-  background: #00008B;
+  background: #666;
   -webkit-transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985);
   -moz-transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985);
   transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985); }
+
+
+  /*********************************************
+   * Custom
+   *********************************************/
+
+  li {
+      list-style: none;
+  }
+
+  ul:not(.posneg) li:before {
+      content:'∗';
+      display: block;
+      position: relative;
+      max-width: 0px;
+      max-height: 0px;
+      left: -0.75em;
+      top: -0px;
+      color: #29abe2;*/ /*alternative: EB7F00*/
+      font-size: 1.0em;
+  }
+
+  ul li span {
+      color: #29abe2;
+      font-family: 'Source Code Pro' !important;
+      font-weight: bold !important;
+  }
+
+  .dark-font {
+      color: #1E1E20;
+  }
+
+  .bottom_aligner {
+      display: inline-block;
+      height: 100%;
+      vertical-align: bottom;
+      width: 0px;
+  }

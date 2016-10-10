@@ -5,10 +5,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <title>reveal.js</title>
+  <title>Testing</title>
 
   <link rel="stylesheet" href="../reveal.js/css/reveal.css">
-  <link rel="stylesheet" href="../reveal.js/css/theme/black.css">
+  <link rel="stylesheet" href="../reveal.js/css/theme/simple.css">
 
   <!-- Theme used for syntax highlighting of code -->
   <link rel="stylesheet" href="../reveal.js/lib/css/zenburn.css">
@@ -185,7 +185,7 @@ public void primeFactorizationCustomMatcher() {
         </section>
         <section>
           <h3>Custom Hamcrest Matcher</h3>
-          <pre><code data-trim class="java">
+          <small><pre><code data-trim class="java">
 private &lt;T&gt; Matcher&lt;Collection&lt;T&gt;&gt; hasAllItems(final T... items) {
     return new TypeSafeMatcher&lt;Collection&lt;T&gt;&gt;() {
 
@@ -213,7 +213,7 @@ private &lt;T&gt; Matcher&lt;Collection&lt;T&gt;&gt; hasAllItems(final T... item
         }
     };
 }
-        </code></pre>
+        </code></pre></small>
         <aside class="notes">
           <pre>
 TypeSafeMatcher                            >> BaseMatcher >> Matcher
@@ -304,7 +304,17 @@ public void divideByNullTestRule() {
   <script>
     // More info https://github.com/hakimel/reveal.js#configuration
     Reveal.initialize({
+      controls: true,
+      progress: true,
       history: true,
+      center: true,
+      slideNumber: 'c/t',
+      transition: 'slide', // none/fade/slide/convex/concave/zoom
+      /*width: 1024,
+      height: 768,
+      margin: 0.1,
+      minScale: 0.75,
+      maxScale: 1.2,*/
 
       // More info https://github.com/hakimel/reveal.js#dependencies
       dependencies: [{
