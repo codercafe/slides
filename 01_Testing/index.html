@@ -1,0 +1,328 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>reveal.js</title>
+
+  <link rel="stylesheet" href="../reveal.js/css/reveal.css">
+  <link rel="stylesheet" href="../reveal.js/css/theme/black.css">
+
+  <!-- Theme used for syntax highlighting of code -->
+  <link rel="stylesheet" href="../reveal.js/lib/css/zenburn.css">
+
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi) ? '../reveal.js/css/print/pdf.css' : '../reveal.js/css/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <section>
+        <h1>Code Academy</h1>
+        <h3>Session #1: Testing</h3>
+        <p>
+          <small>Created by
+            <a href="https://github.com/larsp">Lars</a>,
+            <a href="https://github.com/frankwis">Frank</a> &amp;
+            <a href="https://github.com/utobi">Tobi</a></small>
+        </p>
+      </section>
+
+
+      <!-- ***** Introduction ***** -->
+      <section>
+        <section data-background="img/motivation.jpg">
+          <h1>Why Testing?</h1>
+          <small><a href="https://flic.kr/p/2k2Ww3">high wire 2</a> by Graeme Maclean - Some rights reserved <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a></small>
+          <aside class="notes">
+            tbd
+          </aside>
+        </section>
+        <section>
+          <h2>Motivation</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+
+        <section>
+          <h2>What is testing?</h2>
+          <ul>
+            <li>Unit Testing</li>
+            <li>Integration Testing</li>
+            <li>Blackbox / Functional / Performance Testing</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>What are your test requirements?</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+      </section>
+
+      <!-- ***** Unit Testing ***** -->
+      <section>
+        <section>
+          <h1>Unit Testing</h1>
+
+          <aside class="notes">
+            tbd
+          </aside>
+        </section>
+
+        <section>
+          <h2>Class to be tested</h2>
+          <pre class="fragment"><code data-trim class="java">
+public class SpelloutCalculator {
+    public String add(int x, int y) {...};
+    public String subtract(int minuend, int sutrahend) {...};
+    public String multiply(int x, int y) {...};
+    public String divide(int divident, int divisor) {...};
+    public List&lt;String&gt; primeFactorization(int number) {...};
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+calculator.divide(12, 3)  // returns "four"
+calculator.divide(-10, 4) // returns "minus two point five"
+calculator.primeFactorization(35) // returns ["five", "seven"]
+          </code></pre>
+          <aside class="notes">
+            tbd
+          </aside>
+        </section>
+        <section>
+          <h2>JUnit4 (TestNG)</h2>
+          <pre class="fragment"><code data-trim class="java">
+@Test
+public void add() {
+    SpelloutCalculator calculator = new SpelloutCalculator();
+    assertEquals("fifteen", calculator.add(12, 3));
+    assertEquals("fourteen", calculator.add(10, 4));
+    assertEquals("minus seven", calculator.add(7, -14));
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+@Test
+public void divide() {
+    SpelloutCalculator calculator = new SpelloutCalculator();
+    assertEquals("four", calculator.divide(12, 3));
+    assertEquals("two point five", calculator.divide(10, 4));
+    assertEquals("minus two point five", calculator.divide(-10, 4));
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+@Ignore("Order does matter")
+@Test
+public void primeFactorization() {
+    SpelloutCalculator calculator = new SpelloutCalculator();
+    assertEquals(calculator.primeFactorization(35), Arrays.asList("five", "seven"));
+    assertEquals(calculator.primeFactorization(35), Arrays.asList("seven", "five"));
+}
+          </code></pre>
+          <aside class="notes">
+            tbd
+          </aside>
+        </section>
+
+        <section>
+          <h2>Matcher</h2>
+          <aside class="notes">
+            <ul>
+              <li>Readability</li>
+              <li>Extendable</li>
+            </ul>
+          </aside>
+        </section>
+        <!--  -->
+        <section>
+          <h3>Simple Hamcrest Matcher</h3>
+          <pre class="fragment"><code data-trim class="java">
+@Test
+public void divideWithMatchers() {
+  SpelloutCalculator calculator = new SpelloutCalculator();
+  assertThat(calculator.divide(12, 3), is(equalTo("four")));
+  assertThat(calculator.divide(10, 4), is(equalTo("two point five")));
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+@Test
+public void primeFactorization() {
+    SpelloutCalculator calculator = new SpelloutCalculator();
+    assertThat(calculator.primeFactorization(350), hasItems("two", "five", "seven"));
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+@Test
+public void primeFactorizationCustomMatcher() {
+    SpelloutCalculator calculator = new SpelloutCalculator();
+    assertThat(calculator.primeFactorization(350), hasAllItems("two", "five", "five", "seven"));
+    assertThat(calculator.primeFactorization(350), not(hasAllItems("two", "five", "seven")));
+}
+          </code></pre>
+        </section>
+
+        <section>
+          <h3>Custom Hamcrest Matcher</h3>
+          <pre><code data-trim class="java">
+@Test
+public void primeFactorizationCustomMatcher() {
+    SpelloutCalculator calculator = new SpelloutCalculator();
+    assertThat(calculator.primeFactorization(350), hasAllItems("two", "five", "five", "seven"));
+    assertThat(calculator.primeFactorization(350), not(hasAllItems("two", "five", "seven")));
+}
+        </code></pre>
+        </section>
+        <section>
+          <h3>Custom Hamcrest Matcher</h3>
+          <pre><code data-trim class="java">
+private &lt;T&gt; Matcher&lt;Collection&lt;T&gt;&gt; hasAllItems(final T... items) {
+    return new TypeSafeMatcher&lt;Collection&lt;T&gt;&gt;() {
+
+        @Override
+        public boolean matchesSafely(final Collection&lt;T&gt; item) {
+            if (items.length != item.size()) {
+                return false;
+            }
+
+            Map&lt;T, Long&gt; counts = item
+                        .stream()
+                        .collect(groupingBy(element -> element, counting()));
+            for (T value : counts.keySet()) {
+                if (Collections.frequency(item, value) != counts.get(value)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        @Override
+        public void describeTo(final Description description) {
+            description.appendText("a collection containing ").appendValue(items).appendText( " in arbitrary order");
+        }
+    };
+}
+        </code></pre>
+        <aside class="notes">
+          <pre>
+TypeSafeMatcher                            >> BaseMatcher >> Matcher
+CustomMatcher (implements describeTo)      >> BaseMatcher
+CustomTypeSafeMatcher (implements describeTo) >> TypeSafeMatcher (implements type safety and not null) >> BaseMatcher
+TypeSafeDiagnosingMatcher (type safety, not null woth diagnosis >> BaseMatcher
+          </pre>
+        </aside>
+
+
+        </section>
+
+        <section>
+          <h2>Exception Testing</h2>
+          <pre><code data-trim class="java">
+@Test(expected = ArithmeticException.class)
+public void divideByNull() {
+    SpelloutCalculator calculator = new SpelloutCalculator();
+    calculator.divide(12, 0);
+}
+          </code></pre>
+          <pre><code data-trim class="java">
+@Rule
+public final ExpectedException expected = ExpectedException.none();
+
+@Test
+public void divideByNullTestRule() {
+    SpelloutCalculator calculator = new SpelloutCalculator();
+    expected.expect(ArithmeticException.class);
+    expected.expectMessage("Cannot divide by null");
+    calculator.divide(12, 0);
+}
+           </code></pre>
+        </section>
+
+        <section>
+          <h2>Mocking (Mockito/ JMockit/ EasyMock/ PowerMock)</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+
+        <section>
+          <h2>Antipatterns</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+
+        <section>
+          <h2>Guava testutils</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+
+        <section>
+          <h2>Test Coverage</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+
+        <section>
+          <h2>Async Testing</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+
+        <section data-background="img/tea_time.jpg">
+          <h1>Tea Time</h1>
+          <h3>(Break)</h3>
+          <small><a href="https://flic.kr/p/irWvoG">Tea Time</a> by Prayitno Hadinata - Some rights reserved <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a></small>
+          <aside class="notes">
+            tbd
+          </aside>
+        </section>
+      </section>
+
+
+    </div>
+  </div>
+
+  <script src="../reveal.js/lib/js/head.min.js"></script>
+  <script src="../reveal.js/js/reveal.js"></script>
+
+  <script>
+    // More info https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+      history: true,
+
+      // More info https://github.com/hakimel/reveal.js#dependencies
+      dependencies: [{
+        src: '../reveal.js/plugin/markdown/marked.js'
+      }, {
+        src: '../reveal.js/plugin/markdown/markdown.js'
+      }, {
+        src: '../reveal.js/plugin/notes/notes.js',
+        async: true
+      }, {
+        src: '../reveal.js/plugin/highlight/highlight.js',
+        async: true,
+        callback: function() {
+          hljs.initHighlightingOnLoad();
+        }
+      }]
+    });
+  </script>
+</body>
+
+</html>
