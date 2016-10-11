@@ -124,7 +124,10 @@ body {
 
 .reveal q,
 .reveal blockquote {
-  quotes: none; }
+  quotes: none;
+  color: #FCFFF5;
+  background-color: rgba(0, 0, 0, 1);
+}
 
 .reveal blockquote {
   display: block;

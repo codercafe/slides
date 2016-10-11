@@ -37,47 +37,69 @@
         </p>
       </section>
 
-
-      <!-- ***** Introduction ***** -->
       <section>
-        <section data-background="img/motivation.jpg">
-          <h1>Why Testing?</h1>
-          <small><a href="https://flic.kr/p/2k2Ww3">high wire 2</a> by Graeme Maclean - Some rights reserved <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a></small>
+        <section data-background="img/testing.jpg">
+          <h1>Testing?</h1>
+          <small><a href="https://flic.kr/p/8jZ45h">Role Reversal</a> by Kenny Louie - Some rights reserved <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a></small>
           <aside class="notes">
             tbd
           </aside>
         </section>
         <section>
+          <p><q class="fragment">"I don't know how to write tests."&nbsp;</q></p>
+          <p><q class="fragment">"I don't have enough time to write tests."&nbsp;</q></p>
+          <p><q class="fragment">"Testing is not my job."&nbsp;</q></p>
+          <p><q class="fragment">"Writing tests is too hard."&nbsp;</q></p>
+          <p><q class="fragment">"My code is too simple for tests."&nbsp;</q></p>
+          <p><q class="fragment">...</q></p>
+          <h2 class="fragment">all &#128169;</h2>
+        </section>
+        <section>
           <h2>Motivation</h2>
           <p>
-            tbd
+            <ul>
+              <li class="fragment">Does it work?</li>
+              <li class="fragment">Is the Bug fixed?</li>
+              <li class="fragment">Documentation</li>
+              <li class="fragment">Enable change</li>
+              <li class="fragment">Constrain Features</li>
+              <li class="fragment">Improve Design</li>
+              <li class="fragment">Faster Development</li>
+            </ul>
           </p>
+          <div class="fragment">&rarr; Fundamental Discipline</div>
+          <aside class="notes">
+            Reduce Fear
+            Reduce Bugs in New Features<br/>
+            Reduce Bugs in Existing Features<br/>
+            Are Good Documentation<br/>
+            Reduce the Cost of Change<br/>
+            Allow Refactoring<br/>
+            Improve Design<br/>
+            Constrain Features<br/>
+            Defend Against Other Programmers<br/>
+            Forces You to Slow Down and Think<br/>
+            Makes Development Faster<br/>
+          </aside>
         </section>
 
         <section>
-          <h2>What is testing?</h2>
+          <h2>Testing!</h2>
           <ul>
-            <li>Unit Testing</li>
-            <li>Integration Testing</li>
-            <li>Blackbox / Functional / Performance Testing</li>
+            <li class="fragment">Unit Testing</li>
+            <li class="fragment">Integration Testing</li>
+            <li class="fragment">Black box / Acceptance / Functional Testing</li>
+            <li class="fragment">Performance Testing</li>
+            <li class="fragment">...</li>
           </ul>
-        </section>
-
-        <section>
-          <h2>What are your test requirements?</h2>
-          <p>
-            tbd
-          </p>
         </section>
       </section>
 
-      <!-- ***** Unit Testing ***** -->
       <section>
         <section>
           <h1>Unit Testing</h1>
 
           <aside class="notes">
-            tbd
           </aside>
         </section>
 
@@ -102,7 +124,7 @@ calculator.primeFactorization(35) // returns ["five", "seven"]
           </aside>
         </section>
         <section>
-          <h2>JUnit4 (TestNG)</h2>
+          <h2>JUnit (4)</h2>
           <pre class="fragment"><code data-trim class="java">
 @Test
 public void add() {
@@ -131,7 +153,7 @@ public void primeFactorization() {
 }
           </code></pre>
           <aside class="notes">
-            tbd
+            JUnit4, 5 will be similar, not TestNG, but this is not important
           </aside>
         </section>
 
@@ -286,10 +308,22 @@ public void divideByNullTestRule() {
 
         <section data-background="img/tea_time.jpg">
           <h1>Tea Time</h1>
-          <h3>(Break)</h3>
           <small><a href="https://flic.kr/p/irWvoG">Tea Time</a> by Prayitno Hadinata - Some rights reserved <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a></small>
           <aside class="notes">
             tbd
+          </aside>
+        </section>
+        <section>
+          <q cite="http://martinfowler.com/articles/continuousIntegration.html">
+            Imperfect tests, run frequently, are much better than perfect tests that are never written at all.<br/> --Martin Fowler
+          </q>
+        </section>
+
+
+        <section>
+          <h2 class="fragment">What are your test requirements?</h2>
+          <aside class="notes">
+            More important than test tools, apis, frameworks are your test requirements.
           </aside>
         </section>
       </section>
