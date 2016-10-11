@@ -301,9 +301,65 @@ public void divideByNullTestRule() {
 
         <section>
           <h2>Async Testing</h2>
-          <p>
-            tbd
-          </p>
+          <pre><code data-trim class="java">
+public class LazyFibonacciCalculator {
+
+    private final RuleBasedNumberFormat spelloutFormatter = new RuleBasedNumberFormat(ENGLISH, SPELLOUT);
+    private static Logger logger = LoggerFactory.getLogger(LazyFibonacciCalculator.class);
+
+    private AtomicReference&lt;String&gt; value = new AtomicReference&lt;&gt;();
+
+    public void calculate(int number) {
+        new Thread(() -> {
+            if (number == 1 || number == 2) {
+                value.set(spelloutFormatter.format(1));
+            }
+            int lastFibonacci = 1, currentFibonacci = 1, result = 1;
+            for (int i = 3; i <= number; i++) {
+                result = lastFibonacci + currentFibonacci;
+                lastFibonacci = currentFibonacci;
+                currentFibonacci = result;
+
+                // let's be lazy
+                try {
+                    Thread.sleep(50 + Math.round(1000 * Math.random()));
+                } catch (InterruptedException ex) {
+                    logger.warn("Couldn't be lazy.", ex);
+                }
+
+            }
+            value.set(spelloutFormatter.format(result));
+        }).start();
+    }
+
+    public String getResult() {
+        return value.get();
+    }
+}
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Async Testing</h2>
+          <pre class="fragment"><code data-trim class="java">
+@Ignore("Bad pattern: Sleep duration unforeseeable.")
+@Test
+public void calculateWithThreadSleep() throws InterruptedException {
+    LazyFibonacciCalculator calculator = new LazyFibonacciCalculator();
+    calculator.calculate(20);
+    assertNull(calculator.getResult());
+    Thread.sleep(15000);
+    assertThat(calculator.getResult(), is(equalTo("six thousand seven hundred sixty-five")));
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+@Test
+public void calculateWithAwaitility() {
+    LazyFibonacciCalculator calculator = new LazyFibonacciCalculator();
+    calculator.calculate(20);
+    await().until(calculator::getResult, is(equalTo("six thousand seven hundred sixty-five")));
+}
+          </code></pre>
         </section>
 
         <section data-background="img/tea_time.jpg">
