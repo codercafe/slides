@@ -28,7 +28,7 @@
     <div class="slides">
       <section>
         <h1>Code Academy</h1>
-        <h3>Session #1: Testing</h3>
+        <h3>Session #1: Testing (Java)</h3>
         <p>
           <small>Created by
             <a href="https://github.com/larsp">Lars</a>,
@@ -158,7 +158,7 @@ public void primeFactorization() {
         </section>
 
         <section>
-          <h2>Matcher</h2>
+          <h2>Hamcrest</h2>
           <aside class="notes">
             <ul>
               <li>Readability</li>
@@ -168,7 +168,7 @@ public void primeFactorization() {
         </section>
         <!--  -->
         <section>
-          <h3>Simple Hamcrest Matcher</h3>
+          <h3>Provided Hamcrest Matcher</h3>
           <pre class="fragment"><code data-trim class="java">
 @Test
 public void divideWithMatchers() {
@@ -272,10 +272,20 @@ public void divideByNullTestRule() {
         </section>
 
         <section>
-          <h2>Mocking (Mockito/ JMockit/ EasyMock/ PowerMock)</h2>
-          <p>
-            tbd
-          </p>
+          <h2>Mocking with Mockito</h2>
+          <aside class="notes">
+            defactor standard in our team with the most active communit on GitHub (+3300 stargazers)
+          </aside>
+        </section>
+        <section>
+          <h2>Remember<sup><small>1</small></sup></h2>
+          <ul>
+            <li>Do not mock types you don’t own</li>
+            <li>Don’t mock value objects</li>
+            <li>Don’t mock everything</li>
+            <li>Show love with your tests!</li>
+          </ul>
+          <p><small>[1] <a href="http://mockito.org/" target="_blank">mockito.org</a></small></p>
         </section>
 
         <section>
