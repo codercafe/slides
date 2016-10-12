@@ -296,12 +296,108 @@ public void divideByNullTestRule() {
         </section>
 
         <section>
-          <h2>Guava testutils</h2>
-          <p>
-            tbd
-          </p>
+          <h2>Guava Testutils</h2>
+          <small>Class to be tested:</small>
+          <pre><code data-trim class="java">
+public class StringVector3D implements Serializable {
+
+  public final String x, y, z;
+
+  public StringVector3D(String x, String y, String z) throws ParseException {...}
+
+  public StringVector3D(int x, int y, int z) {
+    this.x = format(x);
+    this.y = format(y);
+    this.z = format(z);
+  }
+
+  @Override
+  public boolean equals(Object o) {...}
+
+  @Override
+  public int hashCode() {...}
+
+}
+          </code></pre>
+        </section>
+        <section>
+          <h3>NPEs and Serializables</h3>
+          <pre class="fragment"><code data-trim class="java">
+@Test
+public void nullPointerException() {
+    new NullPointerTester()
+          .setDefault(String.class, "null")
+          .testAllPublicConstructors(StringVector3D.class);
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+@Test
+public void serializable() throws ParseException {
+    SerializableTester.reserializeAndAssert(new StringVector3D("one", "two", "three"));
+}
+          </code></pre>
+          <aside class="notes">
+            <ul>
+              <li>NullPointerTester
+                <ul>
+                  <li>A test utility that verifies that your methods/constructors throw <tt>NPE</tt>s or <tt>UnsupportedOperationException</tt> whenever null is passed to a parameter that isn't annotated with <tt>Nullable</tt>.</li>
+                  <li><tt>setDefault</tt> provides a custom non-null default value for the parameter type.</li>
+                </ul>
+              </li>
+              <li>SerializableTester
+                <ul>
+                  <li>Tests serialization and deserialization of an object, optionally asserting that the resulting object is equal to the original.</li>
+                  <li><tt>reserializeAndAssert</tt> calls EqualsTester</li>
+                  <li><tt>reserialize</tt> just serializes and reserializes via ByteStream</li>
+                </ul>
+              </li>
+            </ul>
+          </aside>
         </section>
 
+        <section>
+          <h3>EqualsTester</h3>
+          <pre class="fragment"><code data-trim class="java">
+StringVector3D vector1 = new StringVector3D(3, 2, 1);
+
+// object against null returns false
+assertFalse(vector1.equals(null));
+// incompatible class returns false
+assertFalse(vector1.equals(new WordCalculator()));
+// different parameters result in inequality
+assertFalse(vector1.equals(new StringVector3D(1, 2, 3)));
+// object against itself returns true
+assertTrue(vector1.equals(vector1));
+// same parameters result in equality
+assertTrue(vector1.equals(new StringVector3D(3, 2, 1)));
+// hash code matches on equality
+assertEquals(vector1.hashCode(), new StringVector3D(3, 2, 1).hashCode());
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+// What about the String constructor?
+new StringVector3D("three", "two", "one");
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+new EqualsTester()
+          .addEqualityGroup(new StringVector3D(1, 2, 3),
+                  new StringVector3D("one", "two", "three"))
+          .addEqualityGroup(new StringVector3D(0, 0, 0),
+                  StringVector3D.ZERO)
+          .testEquals();
+          </code></pre>
+
+          <aside class="notes">
+            EqualsTester:
+            <ul>
+              <li>comparing each object against itself returns true</li>
+              <li>comparing each object against null returns false</li>
+              <li>comparing each object against an instance of an incompatible class returns false</li>
+              <li>comparing each pair of objects within the same equality group returns true</li>
+              <li>comparing each pair of objects from different equality groups returns false</li>
+              <li>the hash codes of any two equal objects are equal</li>
+            </ul>
+          </aside>
+        </section>
         <section>
           <h2>Test Coverage</h2>
           <p>
@@ -311,12 +407,12 @@ public void divideByNullTestRule() {
 
         <section>
           <h2>Async Testing</h2>
-          <pre><code data-trim class="java">
+          <small>Class to be tested:<br />
+            <pre><code data-trim class="java">
 public class LazyFibonacciCalculator {
 
     private final RuleBasedNumberFormat spelloutFormatter = new RuleBasedNumberFormat(ENGLISH, SPELLOUT);
     private static Logger logger = LoggerFactory.getLogger(LazyFibonacciCalculator.class);
-
     private AtomicReference&lt;String&gt; value = new AtomicReference&lt;&gt;();
 
     public void calculate(int number) {
@@ -332,7 +428,7 @@ public class LazyFibonacciCalculator {
 
                 // let's be lazy
                 try {
-                    Thread.sleep(50 + Math.round(1000 * Math.random()));
+                    Thread.sleep(50 + random.nextInt(1000));
                 } catch (InterruptedException ex) {
                     logger.warn("Couldn't be lazy.", ex);
                 }
@@ -346,11 +442,12 @@ public class LazyFibonacciCalculator {
         return value.get();
     }
 }
-          </code></pre>
+            </code></pre>
+          </small>
         </section>
 
         <section>
-          <h2>Async Testing</h2>
+          <h2>Awaitility</h2>
           <pre class="fragment"><code data-trim class="java">
 @Ignore("Bad pattern: Sleep duration unforeseeable.")
 @Test
