@@ -398,11 +398,41 @@ new EqualsTester()
             </ul>
           </aside>
         </section>
+
         <section>
           <h2>Test Coverage</h2>
           <p>
-            tbd
+            <img width="65%" src="img/code_coverage_screenshot.png"/>
           </p>
+        </section>
+        <section>
+          <h3>Coverage Types</h3>
+          <p>
+            <ul>
+              <li class="fragment">Function coverage</li>
+              <li class="fragment">Line/Statement coverage</li>
+              <li class="fragment">Branch coverage</li>
+              <li class="fragment">Condition/Predicate coverage</li>
+              <li class="fragment">...</li>
+            </ul>
+          </p>
+          <aside class="notes">
+            <ul>
+              <li><b>Function</b> All functions/methods been called?</li>
+              <li><b>Statement</b> All statements executed? <code>(Number of statements exercised/Total number of statements)*100</code></li>
+              <li><b>Path/Branch</b> All branches of each control structure executed?</li>
+              <li><b>Condition/Predicate</b> Has each predicate been evaluated both to true and false?</li>
+            </ul>
+            <code>
+if ((a == 1) | (b == 3)) ...
+// branch coverage with
+(1) a = 1, b = 2
+(2) a = 2, b = 2
+// predicate coverage with
+(1) a = 1, b = 2
+(2) a = 0, b = 3
+            </code>
+          </aside>
         </section>
 
         <section>
