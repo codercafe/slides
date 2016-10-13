@@ -104,7 +104,7 @@
         </section>
 
         <section>
-          <h2>Class to be tested</h2>
+          <h2>Class under test</h2>
           <pre class="fragment"><code data-trim class="java">
 public class SpelloutCalculator {
     public String add(int x, int y) {...};
@@ -283,14 +283,138 @@ public void divideByNullTestRule() {
           </aside>
         </section>
         <section>
+          <h2>Class under test</h2>
+          <pre><code data-trim class="java">
+public class CalculatorService {
+
+    private NumberCalculator numberCalculator;
+    private WordCalculator wordCalculator;
+
+    public CalculatorService(WordCalculator wordCalculator) {
+        this.numberCalculator = new NumberCalculator();
+        this.wordCalculator = wordCalculator;
+    }
+
+    public String mixedAdd(int a, String b) {
+        try {
+            return numberCalculator.add(a, wordCalculator.parseInt(b));
+        } catch (ParseException ex) {
+            throw new CalculatorServiceException("Something went wrong", ex);
+        }
+    }
+}
+          </code></pre>
+        </section>
+        <section>
+          Enable Annotations
+          <pre><code data-trim class="java">
+@RunWith(MockitoJUnitRunner.class)
+public class CalculatorServiceTest {
+...
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+@Rule
+public MockitoRule rule = MockitoJUnit.rule();
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+@Before
+public void initMocks() {
+    MockitoAnnotations.initMocks(this);
+}
+          </code></pre>
+        </section>
+        <section>
+          <p><code>@Mock</code></p>
+          <pre class="fragment"><code data-trim class="java">
+@Mock
+private WordCalculator wordCalculator;
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+@Test
+public void testMixedAdd() throws Exception {
+    when(wordCalculator.parseInt(anyString())).thenReturn(42);
+
+    CalculatorService calculatorService = new CalculatorService(wordCalculator);
+    String result = calculatorService.mixedAdd(42, "123");
+
+    assertThat(result, is(equalTo("eighty-four")));
+    verify(wordCalculator, never()).add(anyString(), anyString());
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+// YOU need to take care of the life cycle!!!
+WordCalculator wordCalculator = mock(WordCalculator.class);
+          </code></pre>
+          <aside class="notes">
+            when using mock() lifecycle handling (resetting) taken care of.
+          </aside>
+        </section>
+        <section>
+          <code>@Spy</code>
+          <pre class="fragment"><code data-trim class="java">
+@Spy
+private WordCalculator wordCalculatorSpy = new WordCalculator();
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+@Test
+public void testMixedAddWithSpy() throws Exception {
+    CalculatorService calculatorService = new CalculatorService(wordCalculatorSpy);
+    String result = calculatorService.mixedAdd(42, "42");
+    assertThat(result, is(equalTo("eighty-four")));
+
+    verify(wordCalculatorSpy, times(1)).parseInt(anyString());
+    verify(wordCalculatorSpy, never()).add(anyString(), anyString());
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+WordCalculator wordCalculatorSpy = spy(new WordCalculator());
+WordCalculator wordCalculatorSpy = spy(WordCalculator.class);
+          </code></pre>
+          <q class="fragment">Overusing spies hints at code design smells.</q>
+        </section>
+        <section>
+          <code>@Captor</code>
+          <pre class="fragment"><code data-trim class="java">
+@Captor
+ArgumentCaptor&lt;Integer&gt; captor;
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+@Test
+public void testMixedAddWithWhiteboxAndCaptor() throws Exception {
+    CalculatorService calculatorService = new CalculatorService(wordCalculator);
+    Whitebox.setInternalState(calculatorService, "numberCalculator", numberCalculator);
+
+    when(wordCalculator.parseInt(anyString())).thenReturn(42);
+    when(numberCalculator.add(captor.capture(), captor.capture())).thenReturn("123");
+
+    calculatorService.mixedAdd(123, "123");
+
+    assertThat(captor.getAllValues(), contains(123, 42));
+    verify(wordCalculator, never()).add(anyString(), anyString());
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+ArgumentCaptor&lt;Integer&gt; captor = ArgumentCaptor.forClass(Integer.class);
+          </code></pre>
+        </section>
+        <section>
+          <code><del>@InjectMocks</del></code>
+          <p class="fragment">Make your dependencies visible</p>
+        </section>
+        <section>
           <h2>Remember<sup><small>1</small></sup></h2>
           <ul>
-            <li>Do not mock types you don’t own</li>
+            <li class="fragment strike">Do not mock types you don’t own</li>
             <li>Don’t mock value objects</li>
             <li>Don’t mock everything</li>
             <li>Show love with your tests!</li>
+            <li class="fragment">Sometimes mocking an API, Driver etc. makes sense, but don't mock e.g. <code>ArrayList</code></li>
           </ul>
           <p><small>[1] <a href="http://mockito.org/" target="_blank">mockito.org</a></small></p>
+          <aside class="notes">
+            Sometimes you have to mock an API, database driver, etc. But don't mock a ArrayList, just use it.
+          </aside>
         </section>
 
         <section>
