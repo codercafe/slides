@@ -208,40 +208,45 @@ public void primeFactorizationCustomMatcher() {
         <section>
           <h3>Custom Hamcrest Matcher</h3>
           <small><pre><code data-trim class="java">
-private &lt;T&gt; Matcher&lt;Collection&lt;T&gt;&gt; hasAllItems(final T... items) {
-    return new TypeSafeMatcher&lt;Collection&lt;T&gt;&gt;() {
+public final class CustomCollectionItemsMatcher extends TypeSafeMatcher&lt;Collection&lt;String&gt;&gt; {
 
-        @Override
-        public boolean matchesSafely(final Collection&lt;T&gt; item) {
-            if (items.length != item.size()) {
-                return false;
-            }
+    private final String[] items;
 
-            Map&lt;T, Long&gt; counts = item
-                        .stream()
-                        .collect(groupingBy(element -> element, counting()));
-            for (T value : counts.keySet()) {
-                if (Collections.frequency(item, value) != counts.get(value)) {
-                    return false;
-                }
-            }
+    private CustomCollectionItemsMatcher(String... items) {
+        this.items = items;
+    }
 
-            return true;
+    public static Matcher&lt;Collection&lt;String&gt;&gt; hasAllItems(String... items) {
+        return new CustomCollectionItemsMatcher(items);
+    }
+
+    @Override
+    protected boolean matchesSafely(Collection&lt;String&gt; item) {
+        if (items.length != item.size()) {
+            return false;
         }
 
-        @Override
-        public void describeTo(final Description description) {
-            description.appendText("a collection containing ").appendValue(items).appendText( " in arbitrary order");
-        }
-    };
+        Map&lt;String, Long&gt; counts = item.stream()
+                .collect(groupingBy(element -> element, counting()));
+        return !counts.keySet().stream()
+                .anyMatch(value -> Collections.frequency(item, value) != counts.get(value));
+    }
+
+    @Override
+    public void describeTo(Description description) {
+        description.appendText("a collection containing ")
+                .appendValue(items)
+                .appendText(" in arbitrary order");
+    }
 }
         </code></pre></small>
         <aside class="notes">
           <pre>
-TypeSafeMatcher                            >> BaseMatcher >> Matcher
-CustomMatcher (implements describeTo)      >> BaseMatcher
-CustomTypeSafeMatcher (implements describeTo) >> TypeSafeMatcher (implements type safety and not null) >> BaseMatcher
-TypeSafeDiagnosingMatcher (type safety, not null woth diagnosis >> BaseMatcher
+BaseMatcher (implements describeMismatch and toString)  >> Matcher
+TypeSafeMatcher  (implements type safety and not null)  >> BaseMatcher
+CustomMatcher (implements describeTo)                   >> BaseMatcher
+CustomTypeSafeMatcher (implements describeTo)           >> TypeSafeMatcher
+TypeSafeDiagnosingMatcher (type safety, not null with diagnosis) >> BaseMatcher
           </pre>
         </aside>
 
