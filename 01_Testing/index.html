@@ -115,8 +115,8 @@ public class SpelloutCalculator {
 }
           </code></pre>
           <pre class="fragment"><code data-trim class="java">
-calculator.divide(12, 3)  // returns "four"
-calculator.divide(-10, 4) // returns "minus two point five"
+calculator.divide(12, 3)          // returns "four"
+calculator.divide(-10, 4)         // returns "minus two point five"
 calculator.primeFactorization(35) // returns ["five", "seven"]
           </code></pre>
           <aside class="notes">
@@ -623,7 +623,12 @@ public void calculateWithThreadSleep() throws InterruptedException {
 public void calculateWithAwaitility() {
     LazyFibonacciCalculator calculator = new LazyFibonacciCalculator();
     calculator.calculate(20);
-    await().until(calculator::getResult, is(equalTo("six thousand seven hundred sixty-five")));
+    // callable
+    await().until(calculator::getResult,
+            is(equalTo("six thousand seven hundred sixty-five")));
+    // proxy
+    await().untilCall(to(calculator).getResult(),
+            is(equalTo("six thousand seven hundred sixty-five")));
 }
           </code></pre>
         </section>
