@@ -93,6 +93,13 @@
             <li class="fragment">...</li>
           </ul>
         </section>
+
+        <section>
+          <h2 class="fragment">What are your test requirements?</h2>
+          <aside class="notes">
+            More important than test tools, apis, frameworks are your test requirements.
+          </aside>
+        </section>
       </section>
 
       <section>
@@ -172,9 +179,9 @@ public void primeFactorization() {
           <pre class="fragment"><code data-trim class="java">
 @Test
 public void divideWithMatchers() {
-  NumberCalculator calculator = new NumberCalculator();
-  assertThat(calculator.divide(12, 3), is(equalTo("four")));
-  assertThat(calculator.divide(10, 4), is(equalTo("two point five")));
+    NumberCalculator calculator = new NumberCalculator();
+    assertThat(calculator.divide(12, 3), is(equalTo("four")));
+    assertThat(calculator.divide(10, 4), is(equalTo("two point five")));
 }
           </code></pre>
           <pre class="fragment"><code data-trim class="java">
@@ -182,14 +189,7 @@ public void divideWithMatchers() {
 public void primeFactorization() {
     NumberCalculator calculator = new NumberCalculator();
     assertThat(calculator.primeFactorization(350), hasItems("two", "five", "seven"));
-}
-          </code></pre>
-          <pre class="fragment"><code data-trim class="java">
-@Test
-public void primeFactorizationCustomMatcher() {
-    NumberCalculator calculator = new NumberCalculator();
-    assertThat(calculator.primeFactorization(350), hasAllItems("two", "five", "five", "seven"));
-    assertThat(calculator.primeFactorization(350), not(hasAllItems("two", "five", "seven")));
+    // fyi: 350 = 2 * 5 * 5 * 7
 }
           </code></pre>
         </section>
@@ -199,9 +199,10 @@ public void primeFactorizationCustomMatcher() {
           <pre><code data-trim class="java">
 @Test
 public void primeFactorizationCustomMatcher() {
-    NumberCalculator calculator = new NumberCalculator();
-    assertThat(calculator.primeFactorization(350), hasAllItems("two", "five", "five", "seven"));
-    assertThat(calculator.primeFactorization(350), not(hasAllItems("two", "five", "seven")));
+  NumberCalculator calculator = new NumberCalculator();
+  assertThat(calculator.primeFactorization(350), hasAllItems("two", "five", "five", "seven"));
+  assertThat(calculator.primeFactorization(350), not(hasAllItems("two", "five", "seven")));
+  // fyi: 350 = 2 * 5 * 5 * 7
 }
         </code></pre>
         </section>
@@ -240,29 +241,29 @@ public final class CustomCollectionItemsMatcher extends TypeSafeMatcher&lt;Colle
     }
 }
         </code></pre></small>
-        <aside class="notes">
-          <pre>
-BaseMatcher (implements describeMismatch and toString)  >> Matcher
-TypeSafeMatcher  (implements type safety and not null)  >> BaseMatcher
-CustomMatcher (implements describeTo)                   >> BaseMatcher
-CustomTypeSafeMatcher (implements describeTo)           >> TypeSafeMatcher
-TypeSafeDiagnosingMatcher (type safety, not null with diagnosis) >> BaseMatcher
-          </pre>
-        </aside>
-
-
         </section>
 
+        <section>
+          <h3>Matcher Implementations</h3>
+          <ul>
+            <li class="fragment"><code>BaseMatcher</code> implements <code>describeMismatch</code> and <code>toString</code></li>
+            <li class="fragment"><code>CustomMatcher</code> extends <code>BaseMatcher</code> and implements <code>describeTo</code></li>
+            <li class="fragment"><code>TypeSafeMatcher</code> extends <code>BaseMatcher</code> and implements type safety and not null</li>
+            <li class="fragment"><code>CustomTypeSafeMatcher</code> extends <code>TypeSafeMatcher</code> and implements <code>describeTo</code></li>
+            <li class="fragment"><code>TypeSafeDiagnosingMatcher</code> implements <code>BaseMatcher</code>, type safety and not null with diagnostics</li>
+          </ul>
+          </section>
         <section>
           <h2>Exception Testing</h2>
           <pre><code data-trim class="java">
 @Test(expected = ArithmeticException.class)
 public void divideByNull() {
     NumberCalculator calculator = new NumberCalculator();
+    ... // some calls and asserts
     calculator.divide(12, 0);
 }
           </code></pre>
-          <pre><code data-trim class="java">
+          <pre class="fragment"><code data-trim class="java">
 @Rule
 public final ExpectedException expected = ExpectedException.none();
 
@@ -537,7 +538,7 @@ public void serializable() throws ParseException {
 
         <section>
           <h2>Test Coverage</h2>
-          <p>
+          <p class="fragment">
             <img width="65%" src="img/code_coverage_screenshot.png"/>
           </p>
         </section>
@@ -666,13 +667,6 @@ public void calculateWithAwaitility() {
           <q cite="http://martinfowler.com/articles/continuousIntegration.html">
             Imperfect tests, run frequently, are much better than perfect tests that are never written at all.<br/> --Martin Fowler
           </q>
-        </section>
-
-        <section>
-          <h2 class="fragment">What are your test requirements?</h2>
-          <aside class="notes">
-            More important than test tools, apis, frameworks are your test requirements.
-          </aside>
         </section>
 
       </section>
