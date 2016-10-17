@@ -283,7 +283,7 @@ public void divideByNullTestRule() {
           </aside>
         </section>
         <section>
-          <h2>Class under test</h2>
+          <h3>Class under test</h3>
           <pre><code data-trim class="java">
 public class CalculatorService {
 
@@ -420,6 +420,12 @@ ArgumentCaptor&lt;Integer&gt; captor = ArgumentCaptor.forClass(Integer.class);
           <p><small>[1] <a href="http://mockito.org/" target="_blank">mockito.org</a></small></p>
           <aside class="notes">
             Sometimes you have to mock an API, database driver, etc. But don't mock a ArrayList, just use it.
+          </aside>
+        </section>
+        <section>
+          <q>Using PowerMock hints at code design smells.</q>
+          <aside class="notes">
+            Word of caution
           </aside>
         </section>
 
