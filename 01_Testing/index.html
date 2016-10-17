@@ -106,7 +106,7 @@
         <section>
           <h2>Class under test</h2>
           <pre class="fragment"><code data-trim class="java">
-public class SpelloutCalculator {
+public class NumberCalculator {
     public String add(int x, int y) {...};
     public String subtract(int minuend, int sutrahend) {...};
     public String multiply(int x, int y) {...};
@@ -128,7 +128,7 @@ calculator.primeFactorization(35) // returns ["five", "seven"]
           <pre class="fragment"><code data-trim class="java">
 @Test
 public void add() {
-    SpelloutCalculator calculator = new SpelloutCalculator();
+    NumberCalculator calculator = new NumberCalculator();
     assertEquals("fifteen", calculator.add(12, 3));
     assertEquals("fourteen", calculator.add(10, 4));
     assertEquals("minus seven", calculator.add(7, -14));
@@ -137,7 +137,7 @@ public void add() {
           <pre class="fragment"><code data-trim class="java">
 @Test
 public void divide() {
-    SpelloutCalculator calculator = new SpelloutCalculator();
+    NumberCalculator calculator = new NumberCalculator();
     assertEquals("four", calculator.divide(12, 3));
     assertEquals("two point five", calculator.divide(10, 4));
     assertEquals("minus two point five", calculator.divide(-10, 4));
@@ -147,7 +147,7 @@ public void divide() {
 @Ignore("Order does matter")
 @Test
 public void primeFactorization() {
-    SpelloutCalculator calculator = new SpelloutCalculator();
+    NumberCalculator calculator = new NumberCalculator();
     assertEquals(calculator.primeFactorization(35), Arrays.asList("five", "seven"));
     assertEquals(calculator.primeFactorization(35), Arrays.asList("seven", "five"));
 }
@@ -172,7 +172,7 @@ public void primeFactorization() {
           <pre class="fragment"><code data-trim class="java">
 @Test
 public void divideWithMatchers() {
-  SpelloutCalculator calculator = new SpelloutCalculator();
+  NumberCalculator calculator = new NumberCalculator();
   assertThat(calculator.divide(12, 3), is(equalTo("four")));
   assertThat(calculator.divide(10, 4), is(equalTo("two point five")));
 }
@@ -180,14 +180,14 @@ public void divideWithMatchers() {
           <pre class="fragment"><code data-trim class="java">
 @Test
 public void primeFactorization() {
-    SpelloutCalculator calculator = new SpelloutCalculator();
+    NumberCalculator calculator = new NumberCalculator();
     assertThat(calculator.primeFactorization(350), hasItems("two", "five", "seven"));
 }
           </code></pre>
           <pre class="fragment"><code data-trim class="java">
 @Test
 public void primeFactorizationCustomMatcher() {
-    SpelloutCalculator calculator = new SpelloutCalculator();
+    NumberCalculator calculator = new NumberCalculator();
     assertThat(calculator.primeFactorization(350), hasAllItems("two", "five", "five", "seven"));
     assertThat(calculator.primeFactorization(350), not(hasAllItems("two", "five", "seven")));
 }
@@ -199,7 +199,7 @@ public void primeFactorizationCustomMatcher() {
           <pre><code data-trim class="java">
 @Test
 public void primeFactorizationCustomMatcher() {
-    SpelloutCalculator calculator = new SpelloutCalculator();
+    NumberCalculator calculator = new NumberCalculator();
     assertThat(calculator.primeFactorization(350), hasAllItems("two", "five", "five", "seven"));
     assertThat(calculator.primeFactorization(350), not(hasAllItems("two", "five", "seven")));
 }
@@ -258,7 +258,7 @@ TypeSafeDiagnosingMatcher (type safety, not null with diagnosis) >> BaseMatcher
           <pre><code data-trim class="java">
 @Test(expected = ArithmeticException.class)
 public void divideByNull() {
-    SpelloutCalculator calculator = new SpelloutCalculator();
+    NumberCalculator calculator = new NumberCalculator();
     calculator.divide(12, 0);
 }
           </code></pre>
@@ -268,7 +268,7 @@ public final ExpectedException expected = ExpectedException.none();
 
 @Test
 public void divideByNullTestRule() {
-    SpelloutCalculator calculator = new SpelloutCalculator();
+    NumberCalculator calculator = new NumberCalculator();
     expected.expect(ArithmeticException.class);
     expected.expectMessage("Cannot divide by null");
     calculator.divide(12, 0);
@@ -433,13 +433,13 @@ ArgumentCaptor&lt;Integer&gt; captor = ArgumentCaptor.forClass(Integer.class);
           <h2>Guava Testutils</h2>
           <small>Class under test:</small>
           <pre><code data-trim class="java">
-public class StringVector3D implements Serializable {
+public class StringPoint3D implements Serializable {
 
   public final String x, y, z;
 
-  public StringVector3D(String x, String y, String z) throws ParseException {...}
+  public StringPoint3D(String x, String y, String z) throws ParseException {...}
 
-  public StringVector3D(int x, int y, int z) {
+  public StringPoint3D(int x, int y, int z) {
     this.x = format(x);
     this.y = format(y);
     this.z = format(z);
@@ -460,31 +460,31 @@ public class StringVector3D implements Serializable {
         <section>
           <h3>EqualsTester</h3>
           <pre class="fragment"><code data-trim class="java">
-StringVector3D vector1 = new StringVector3D(3, 2, 1);
+StringPoint3D point = new StringPoint3D(3, 2, 1);
 
 // object against null returns false
-assertFalse(vector1.equals(null));
+assertFalse(point.equals(null));
 // incompatible class returns false
-assertFalse(vector1.equals(new WordCalculator()));
+assertFalse(point.equals(new WordCalculator()));
 // different parameters result in inequality
-assertFalse(vector1.equals(new StringVector3D(1, 2, 3)));
+assertFalse(point.equals(new StringPoint3D(1, 2, 3)));
 // object against itself returns true
-assertTrue(vector1.equals(vector1));
+assertTrue(point.equals(point));
 // same parameters result in equality
-assertTrue(vector1.equals(new StringVector3D(3, 2, 1)));
+assertTrue(point.equals(new StringPoint3D(3, 2, 1)));
 // hash code matches on equality
-assertEquals(vector1.hashCode(), new StringVector3D(3, 2, 1).hashCode());
+assertEquals(point.hashCode(), new StringPoint3D(3, 2, 1).hashCode());
           </code></pre>
           <pre class="fragment"><code data-trim class="java">
 // What about the String constructor?
-new StringVector3D("three", "two", "one");
+new StringPoint3D("three", "two", "one");
           </code></pre>
           <pre class="fragment"><code data-trim class="java">
 new EqualsTester()
-          .addEqualityGroup(new StringVector3D(1, 2, 3),
-                  new StringVector3D("one", "two", "three"))
-          .addEqualityGroup(new StringVector3D(0, 0, 0),
-                  StringVector3D.ZERO)
+          .addEqualityGroup(new StringPoint3D(1, 2, 3),
+                  new StringPoint3D("one", "two", "three"))
+          .addEqualityGroup(new StringPoint3D(0, 0, 0),
+                  StringPoint3D.ZERO)
           .testEquals();
           </code></pre>
 
@@ -507,13 +507,13 @@ new EqualsTester()
 public void nullPointerException() {
     new NullPointerTester()
           .setDefault(String.class, "null")
-          .testAllPublicConstructors(StringVector3D.class);
+          .testAllPublicConstructors(StringPoint3D.class);
 }
           </code></pre>
           <pre class="fragment"><code data-trim class="java">
 @Test
 public void serializable() throws ParseException {
-    SerializableTester.reserializeAndAssert(new StringVector3D("one", "two", "three"));
+    SerializableTester.reserializeAndAssert(new StringPoint3D("one", "two", "three"));
 }
           </code></pre>
           <aside class="notes">
