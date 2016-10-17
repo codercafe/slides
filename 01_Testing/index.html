@@ -342,10 +342,12 @@ public void testMixedAdd() throws Exception {
     verify(wordCalculator, never()).add(anyString(), anyString());
 }
           </code></pre>
-          <pre class="fragment"><code data-trim class="java">
+          <div class="fragment"><p>alternative:</p>
+            <pre><code data-trim class="java">
 // YOU need to take care of the life cycle!!!
 WordCalculator wordCalculator = mock(WordCalculator.class);
-          </code></pre>
+            </code></pre>
+          </div>
           <aside class="notes">
             when using mock() lifecycle handling (resetting) taken care of.
           </aside>
@@ -367,10 +369,12 @@ public void testMixedAddWithSpy() throws Exception {
     verify(wordCalculatorSpy, never()).add(anyString(), anyString());
 }
           </code></pre>
-          <pre class="fragment"><code data-trim class="java">
+          <div class="fragment"><p>alternative:</p>
+            <pre><code data-trim class="java">
 WordCalculator wordCalculatorSpy = spy(new WordCalculator());
 WordCalculator wordCalculatorSpy = spy(WordCalculator.class);
-          </code></pre>
+            </code></pre>
+          </div>
           <q class="fragment">Overusing spies hints at code design smells.</q>
         </section>
         <section>
@@ -394,9 +398,11 @@ public void testMixedAddWithWhiteboxAndCaptor() throws Exception {
     verify(wordCalculator, never()).add(anyString(), anyString());
 }
           </code></pre>
-          <pre class="fragment"><code data-trim class="java">
+          <div class="fragment"><p>alternative:</p>
+            <pre><code data-trim class="java">
 ArgumentCaptor&lt;Integer&gt; captor = ArgumentCaptor.forClass(Integer.class);
-          </code></pre>
+            </code></pre>
+          </div>
         </section>
         <section>
           <code><del>@InjectMocks</del></code>
@@ -419,7 +425,7 @@ ArgumentCaptor&lt;Integer&gt; captor = ArgumentCaptor.forClass(Integer.class);
 
         <section>
           <h2>Guava Testutils</h2>
-          <small>Class to be tested:</small>
+          <small>Class under test:</small>
           <pre><code data-trim class="java">
 public class StringVector3D implements Serializable {
 
@@ -443,40 +449,9 @@ public class StringVector3D implements Serializable {
           </code></pre>
         </section>
         <section>
-          <h3>NPEs and Serializables</h3>
-          <pre class="fragment"><code data-trim class="java">
-@Test
-public void nullPointerException() {
-    new NullPointerTester()
-          .setDefault(String.class, "null")
-          .testAllPublicConstructors(StringVector3D.class);
-}
-          </code></pre>
-          <pre class="fragment"><code data-trim class="java">
-@Test
-public void serializable() throws ParseException {
-    SerializableTester.reserializeAndAssert(new StringVector3D("one", "two", "three"));
-}
-          </code></pre>
-          <aside class="notes">
-            <ul>
-              <li>NullPointerTester
-                <ul>
-                  <li>A test utility that verifies that your methods/constructors throw <tt>NPE</tt>s or <tt>UnsupportedOperationException</tt> whenever null is passed to a parameter that isn't annotated with <tt>Nullable</tt>.</li>
-                  <li><tt>setDefault</tt> provides a custom non-null default value for the parameter type.</li>
-                </ul>
-              </li>
-              <li>SerializableTester
-                <ul>
-                  <li>Tests serialization and deserialization of an object, optionally asserting that the resulting object is equal to the original.</li>
-                  <li><tt>reserializeAndAssert</tt> calls EqualsTester</li>
-                  <li><tt>reserialize</tt> just serializes and reserializes via ByteStream</li>
-                </ul>
-              </li>
-            </ul>
-          </aside>
+          <p><q>Always override <code>hashCode</code> when you override <code>equals</code></q></p>
         </section>
-
+        </section>
         <section>
           <h3>EqualsTester</h3>
           <pre class="fragment"><code data-trim class="java">
@@ -520,6 +495,40 @@ new EqualsTester()
             </ul>
           </aside>
         </section>
+        <section>
+          <h3>NPEs &amp; Serializables</h3>
+          <pre class="fragment"><code data-trim class="java">
+@Test
+public void nullPointerException() {
+    new NullPointerTester()
+          .setDefault(String.class, "null")
+          .testAllPublicConstructors(StringVector3D.class);
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+@Test
+public void serializable() throws ParseException {
+    SerializableTester.reserializeAndAssert(new StringVector3D("one", "two", "three"));
+}
+          </code></pre>
+          <aside class="notes">
+            <ul>
+              <li>NullPointerTester
+                <ul>
+                  <li>A test utility that verifies that your methods/constructors throw <tt>NPE</tt>s or <tt>UnsupportedOperationException</tt> whenever null is passed to a parameter that isn't annotated with <tt>Nullable</tt>.</li>
+                  <li><tt>setDefault</tt> provides a custom non-null default value for the parameter type.</li>
+                </ul>
+              </li>
+              <li>SerializableTester
+                <ul>
+                  <li>Tests serialization and deserialization of an object, optionally asserting that the resulting object is equal to the original.</li>
+                  <li><tt>reserializeAndAssert</tt> calls EqualsTester</li>
+                  <li><tt>reserialize</tt> just serializes and reserializes via ByteStream</li>
+                </ul>
+              </li>
+            </ul>
+          </aside>
+        </section>
 
         <section>
           <h2>Test Coverage</h2>
@@ -559,7 +568,7 @@ if ((a == 1) | (b == 3)) ...
 
         <section>
           <h2>Async Testing</h2>
-          <small>Class to be tested:<br />
+          <small>Class under test:<br />
             <pre><code data-trim class="java">
 public class LazyFibonacciCalculator {
 
@@ -635,12 +644,12 @@ public void calculateWithAwaitility() {
         </section>
 
         <section>
-          <h2>What now?</h2>
+          <h2><code>//TODO</code></h2>
           <p>
             <ul>
-              <li class="fragment">Checkout the samples [github.com/codercafe/samples]</li>
+              <li class="fragment">Checkout the <a href="http://github.com/codercafe/samples">samples</a></li>
               <li class="fragment">Analyze test coverage</li>
-              <li class="fragment">Bring it to 100% :-)</li>
+              <li class="fragment">Bring it to 100% &#128526;</li>
             </ul>
           </p>
           <aside class="notes">
