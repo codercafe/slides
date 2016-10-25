@@ -811,31 +811,83 @@ public class ServerResource extends ExternalResource {
   @AfterClass
 )
           </code></pre>
-          <!-- <ul>
-            <li>@ClassRule
-              <ul>
-                <li>@BeforeClass</li>
-                <li>@Rule
-                  <ul>
-                    <li>@Before</li>
-                    <li>@Test</li>
-                    <li>@After</li>
-                  </ul>
-                </li>
-              </ul>
-              <li>@AfterClass</li>
-            </li>
-          </ul> -->
-          <aside class="notes">
-
-          </aside>
         </section>
 
         <section>
-          <h2>Groovy</h2>
-          <p>
-            asType
-          </p>
+          <h2>Groovy: Java classes under test</h2>
+          <pre><code data-trim class="java">
+public class SoftwareEngineer {
+
+    public SoftwareEngineer(String name, long phone) {
+        this(name, phone, null);
+    }
+
+    public SoftwareEngineer(String name, long phone, URL gitHub) {
+        this.name = name;
+        this.phone = phone;
+        this.gitHub = gitHub;
+    }
+
+    @Override
+    public boolean equals(Object o) {...}
+
+    @Override
+    public int hashCode() {...}
+}
+          </code></pre>
+          <pre><code data-trim class="java">
+public interface YellowPages {
+    SoftwareEngineer getEngineer(UUID id);
+}
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Groovy: Coercion &amp; Mocking</h2>
+          <pre><code data-trim class="groovy">
+@Test
+public void typeCoercion() {
+    // SoftwareEngineer via implicit and URL via explicit Coercion
+    SoftwareEngineer engineer = ["Frank", 1234567890, ["https://github.com/frankwis"] as URL]
+    assertThat engineer, is(equalTo(new SoftwareEngineer("Frank", 1234567890, new URL("https://github.com/frankwis"))))
+}
+          </code></pre>
+          <pre><code data-trim class="groovy">
+@Test
+public void mocking() {
+    def engineer = ["John Doe", 1234] as SoftwareEngineer
+
+    def closureCoercedService = { UUID id -> engineer } as YellowPages
+    assertThat closureCoercedService.getEngineer(randomUUID()), is(equalTo(new SoftwareEngineer("John Doe", 1234)))
+
+    def mapCoercedService = [getEngineer: { UUID id -> engineer }] as YellowPages
+    assertThat mapCoercedService.getEngineer(randomUUID()), is(equalTo(new SoftwareEngineer("John Doe", 1234)))
+}
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Groovy: Beans &amp; Domain agnostic</h2>
+          <pre><code data-trim class="groovy">
+@EqualsAndHashCode
+class Engineers {
+    SoftwareEngineer[] participants;
+    SoftwareEngineer[] tutors;
+}
+          </code></pre>
+          <pre><code data-trim class="groovy">
+@Test
+public void groovyBean() {
+    // explicit
+    def engineers1 = [participants: [["John Doe", 1234], ["Jane Doe", 4321]],
+                      tutors      : [["Frank", 555666777], ["Lars", 111222333]]] as Engineers
+
+    // implicit
+    Engineers engineers2 = [participants: [["John Doe", 1234], ["Jane Doe", 4321]],
+                            tutors      : [["Frank", 555666777], ["Lars", 111222333]]]
+    assertThat engineers1, is(equalTo(engineers2))
+}
+          </code></pre>
         </section>
       </section>
 
@@ -843,9 +895,50 @@ public class ServerResource extends ExternalResource {
       <section>
         <section>
           <h1>Integration Testing</h1>
-          <p>
-            tbd
-          </p>
+        </section>
+
+        <section>
+          <h2>Service under test</h2>
+          <small>
+            <table>
+              <tr>
+                <td>HTTP Method</td>
+                <td>Return Type</td>
+                <td>Resource</td>
+                <td>Functionality</td>
+              </tr>
+              <tr>
+                <td>POST</td>
+                <td>UUID</td>
+                <td>/v1/counter</td>
+                <td>Creates a new counter and returns its ID</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td>Collection&lt;UUID&gt;</td>
+                <td>/v1/counters</td>
+                <td>Lists all available counters</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td>Long</td>
+                <td>/v1/counter/{id}</td>
+                <td>Returns actual counter value</td>
+              </tr>
+              <tr>
+                <td>PATCH</td>
+                <td>Void</td>
+                <td>/v1/counter/{id}</td>
+                <td>Adds given value to specified counter</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td>String</td>
+                <td>/v1/ping</td>
+                <td>Returns "pong" when resource available</td>
+              </tr>
+            </table>
+          </small>
         </section>
 
         <section>
@@ -857,9 +950,93 @@ public class ServerResource extends ExternalResource {
 
         <section>
           <h2>RestAssured</h2>
-          <p>
-            tbd
-          </p>
+          <pre class="fragment"><code data-trim class="groovy">
+given()
+    .param("a", "b")
+    .header("c", "d")
+when()
+    .get("/zahl")
+then()
+    .statusCode(200).
+    .body("x.y", equalTo("42"));
+          </code></pre>
+        </section>
+
+        <section>
+          <h3>Specification Frameworks</h3>
+          <pre class="fragment"><code data-trim class="groovy">
+class SpockSpecification extends Specification {
+
+    def "Spock specification using Hamcrest matcher"() {
+        given:
+          final someMap = [name: 'John Doe']
+
+        then:
+          expect someMap, hasKey('name')
+    }
+
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="groovy">
+class SimpleTest : Spek({
+  describe("a calculator") {
+      val calculator = SampleCalculator()
+
+      it("should return the result of adding the first number to the second number") {
+          val sum = calculator.sum(2, 4)
+          assertEquals(6, sum)
+      }
+
+      it("should return the result of subtracting the second number from the first number") {
+          val subtract = calculator.subtract(4, 2)
+          assertEquals(2, subtract)
+      }
+  }
+})
+          </code></pre>
+        </section>
+        <section>
+          <h3>RestAssured &amp; Spock</h3>
+          <pre class="fragment"><code data-trim class="groovy">
+given: "A counter has been create and its UUID is known"
+    def uuid = RestAssured
+     .expect()
+        .statusCode(201)
+     .when()
+        .post(baseUrl + COUNTER_PATH)
+     .andReturn()
+        .as(UUID.class)
+          </code></pre>
+          <pre class="fragment"><code data-trim class="groovy">
+and: "A Patch object exists"
+    def patchTo = [
+                      "op"   : "add",
+                      "path" : "path",
+                      "value": "42"
+                  ]
+          </code></pre>
+        </section>
+        <section>
+          <h3>RestAssured &amp; Spock</h3>
+          <pre class="fragment"><code data-trim class="groovy">
+when: "The counter is being patched"
+    def response = RestAssured
+        .given()
+            .contentType(Constants.Service.ACCEPT_JSON_HEADER)
+            .body(patchTo)
+        .patch(baseUrl + COUNTER_PATH + "/" + uuid)
+          </code></pre>
+          <pre class="fragment"><code data-trim class="groovy">
+then: "The Patch request has status code 204"
+    assertThat(response.statusCode, is(204))
+
+and: "The counter has been updated by 42"
+    RestAssured.given()
+        .when()
+            .get(baseUrl + COUNTER_PATH + "/" + uuid)
+        .then()
+            .assertThat().body(equalTo("42"))
+          </code></pre>
         </section>
       </section>
       <!-- ***** Functional Testing ***** -->
