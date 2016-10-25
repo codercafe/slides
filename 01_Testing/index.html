@@ -645,12 +645,12 @@ public void calculateWithAwaitility() {
           <h1>Tea Time</h1>
           <small><a href="https://flic.kr/p/irWvoG">Tea Time</a> by Prayitno Hadinata - Some rights reserved <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a></small>
           <aside class="notes">
-            tbd
+            Short break before hands-on practice
           </aside>
         </section>
 
         <section>
-          <h2><code>//TODO</code></h2>
+          <h2><code>// TODO</code></h2>
           <p>
             <ul>
               <li class="fragment">Checkout the <a href="http://github.com/codercafe/samples">samples</a></li>
@@ -658,19 +658,279 @@ public void calculateWithAwaitility() {
               <li class="fragment">Bring it to 100% &#128526;</li>
             </ul>
           </p>
-          <aside class="notes">
-            tbd
-          </aside>
         </section>
 
         <section>
           <q cite="http://martinfowler.com/articles/continuousIntegration.html">
             Imperfect tests, run frequently, are much better than perfect tests that are never written at all.<br/> --Martin Fowler
           </q>
+          <aside class="notes">
+            Motivational slide for presenting results of hands-on session.
+          </aside>
         </section>
 
+        <section>
+          <h2>Testing Concurrency</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+
+        <section>
+          <h2>JUnit Revisited: Statement</h2>
+          <pre><code data-trim class="java">
+//A statement represents an action that has to be performed at runtime to run a test
+public abstract class Statement {
+    public abstract void evaluate() throws Throwable;
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+//For each @Test annotated method an InvokeMethod will be instantiated
+public class InvokeMethod extends Statement {
+
+    public InvokeMethod(FrameworkMethod testMethod, Object target) {...}
+
+    @Override
+    public void evaluate() throws Throwable {
+        testMethod.invokeExplosively(target);
+    }
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+//Each @AfterClass and @After annotated method will be represented via some RunAfters instance
+public class RunAfters extends Statement {
+
+    public RunAfters(Statement next, List&lt;FrameworkMethod&gt; afters, Object target) {...}
+
+    @Override
+    public void evaluate() throws Throwable {
+        next.evaluate();
+        for (FrameworkMethod each : afters) {
+            each.invokeExplosively(target);
+        }
+    }
+}
+          </code></pre>
+          <aside class="notes">
+            <ul>
+              <li>A <code>Statement</code> represents an action that has to be performed at runtime to run a test.</li>
+              <li>Statements maybe chained (see RunAfters, RunBefores, FailOnTimeout, ExpectException)</li>
+              <li>@Test(timeout = 1000)</li>
+              <li>Not chained: InvokeMethod, Fail</li>
+            </ul>
+          </aside>
+        </section>
+
+        <section>
+          <h2>JUnit Revisited: TestRule</h2>
+          <pre><code data-trim class="java">
+// TestRules may intercept a Statement's evaluation
+public interface TestRule {
+    Statement apply(Statement base, Description description);
+}
+          </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+// Paradigmatic implementation of ExternalResource
+public abstract class ExternalResource implements TestRule {
+
+    public Statement apply(Statement base, Description description) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                before();
+                try {
+                    base.evaluate();
+                } finally {
+                    after();
+                }
+            }
+        };
+    }
+
+    protected void before() throws Throwable {};
+    protected void after() {};
+}
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>JUnit Revisited: Extending TestRule</h2>
+          <pre><code data-trim class="java">
+public class ServerResource extends ExternalResource {
+
+    public ServerResource(Server server) {
+        this.server = server;
+    }
+
+    @Override
+    protected void before() throws Throwable {
+        server.connect();
+    }
+
+    @Override
+    protected void after() {
+        server.disconnect();
+    }
+}
+          </code></pre>
+        </section>
+        <section>
+          <h3>JUnit Revisited: Test Rules</h3>
+          <small>
+            <ul>
+              <li><code>DisableOnDebug</code> allows labeling certain rules to be disabled when debugging.</li>
+              <li><code>ExpectedException</code> allows verifying that code throws a specific exception.</li>
+              <li><code>ExternalResource</code> is a base class for Rules that set up an external resource before a test (a file, socket, server, database connection, etc.), and guarantee to tear it down afterward.</li>
+              <li><code>TemporaryFolder</code> allows creation of files and folders that should be deleted when the test method finishes (whether it passes or fails). Extends <code>ExternalResource</code></li>
+              <li><code>RuleChain</code> allows ordering of TestRules.</li>
+              <li><code>RunRules</code> runs a collection of rules on a statement.</li>
+              <li><code>Stopwatch</code> notifies one of its own protected methods of the time spent by a test.</li>
+              <li><code>TestName</code> makes the current test name available inside test methods.</li>
+              <li><code>TestWatcher</code> is a base class for Rules that take note of the testing action, without modifying it.</li>
+              <li><code>Timeout</code> applies the same timeout to all test methods in a class.</li>
+              <li><code>Verifier</code> is a base class for Rules like ErrorCollector, which can turn otherwise passing test methods into failing tests if a verification check is failed.</li>
+              <li><code>ErrorCollector</code> allows execution of a test to continue after the first problem is found (for example, to collect <b>all</b> the incorrect rows in a table, and report them all at once).</li>
+            </ul>
+            <br /><br />
+            Source: <a href="http://junit.org/junit4/javadoc/latest/org/junit/rules/package-summary.html">JavaDocs</a>
+          </small>
+        </section>
+
+        <section>
+          <h2>JUnit Revisited: Test Flow</h2>
+          <pre><code data-trim class="java">
+// simplified view on JUnit's nesting model
+
+@ClassRule (
+  @BeforeClass
+  @Rule (
+    @Before
+    @Test
+    @After
+  )
+  @AfterClass
+)
+          </code></pre>
+          <!-- <ul>
+            <li>@ClassRule
+              <ul>
+                <li>@BeforeClass</li>
+                <li>@Rule
+                  <ul>
+                    <li>@Before</li>
+                    <li>@Test</li>
+                    <li>@After</li>
+                  </ul>
+                </li>
+              </ul>
+              <li>@AfterClass</li>
+            </li>
+          </ul> -->
+          <aside class="notes">
+
+          </aside>
+        </section>
+
+        <section>
+          <h2>Groovy</h2>
+          <p>
+            asType
+          </p>
+        </section>
       </section>
 
+      <!-- ***** Integration Testing ***** -->
+      <section>
+        <section>
+          <h1>Integration Testing</h1>
+          <p>
+            tbd
+          </p>
+        </section>
+
+        <section>
+          <h2>JerseyTest</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+
+        <section>
+          <h2>RestAssured</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+      </section>
+      <!-- ***** Functional Testing ***** -->
+      <section>
+        <section>
+          <h1>Functional Testing</h1>
+          <p>
+            tbd
+          </p>
+        </section>
+
+        <section>
+          <h2>Groovy</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+        <section>
+
+
+
+          <h3>Coercion for Java POJOs</h3>
+          <pre class="fragment"><code data-trim class="java">
+def patch = ["add", "path", 42] as Patch // explicit coercion
+Patch patch = ["add", "path", 42]        // implicit coercion
+def patch = new Patch("add", "path", 42) // default invocation
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Spock</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+      </section>
+
+
+      <!-- ***** Performance Testing ***** -->
+      <section>
+        <section>
+          <h1>Performance Testing</h1>
+          <p>
+            tbd
+          </p>
+        </section>
+
+        <section>
+          <h2>Gatling</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+      </section>
+
+      <!-- ***** Summary ***** -->
+      <section>
+        <section>
+          <h1>Summary</h1>
+          <p>
+            tbd
+          </p>
+        </section>
+
+        <section>
+          <h2>TBD</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+      </section>
     </div>
   </div>
 
