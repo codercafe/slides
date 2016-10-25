@@ -670,14 +670,32 @@ public void calculateWithAwaitility() {
         </section>
 
         <section>
-          <h2>Testing Concurrency</h2>
-          <p>
-            tbd
-          </p>
+          <h2>JUnit Revisited</h2>
+          <ul>
+            <li>Test Flow</li>
+            <li>Statement</li>
+            <li>TestRule</li>
+          </ul>
         </section>
 
         <section>
-          <h2>JUnit Revisited: Statement</h2>
+          <h3>Test Flow</h3>
+          <pre><code data-trim class="java">
+// simplified view on JUnit's nesting model
+
+@ClassRule (
+  @BeforeClass
+  @Rule (
+    @Before
+    @Test
+    @After
+  )
+  @AfterClass
+)
+          </code></pre>
+        </section>
+        <section>
+          <h3>Statements</h3>
           <pre><code data-trim class="java">
 //A statement represents an action that has to be performed at runtime to run a test
 public abstract class Statement {
@@ -722,7 +740,7 @@ public class RunAfters extends Statement {
         </section>
 
         <section>
-          <h2>JUnit Revisited: TestRule</h2>
+          <h3>TestRule</h3>
           <pre><code data-trim class="java">
 // TestRules may intercept a Statement's evaluation
 public interface TestRule {
@@ -754,7 +772,7 @@ public abstract class ExternalResource implements TestRule {
         </section>
 
         <section>
-          <h2>JUnit Revisited: Extending TestRule</h2>
+          <h3>Extending TestRule</h3>
           <pre><code data-trim class="java">
 public class ServerResource extends ExternalResource {
 
@@ -775,7 +793,7 @@ public class ServerResource extends ExternalResource {
           </code></pre>
         </section>
         <section>
-          <h3>JUnit Revisited: Test Rules</h3>
+          <h3>Test Rules</h3>
           <small>
             <ul>
               <li><code>DisableOnDebug</code> allows labeling certain rules to be disabled when debugging.</li>
@@ -795,44 +813,49 @@ public class ServerResource extends ExternalResource {
             Source: <a href="http://junit.org/junit4/javadoc/latest/org/junit/rules/package-summary.html">JavaDocs</a>
           </small>
         </section>
+      </section>
 
+      <!-- ***** Integration Testing ***** -->
+      <section>
         <section>
-          <h2>JUnit Revisited: Test Flow</h2>
-          <pre><code data-trim class="java">
-// simplified view on JUnit's nesting model
-
-@ClassRule (
-  @BeforeClass
-  @Rule (
-    @Before
-    @Test
-    @After
-  )
-  @AfterClass
-)
-          </code></pre>
+          <h1>Integration Testing</h1>
         </section>
 
         <section>
-          <h2>Groovy: Java classes under test</h2>
+          <h2>JerseyTest</h2>
+          <p>
+            tbd
+          </p>
+        </section>
+
+      </section>
+
+      <!-- ***** Groovy ***** -->
+      <section>
+        <section>
+          <h1>Groovy</h1>
+          Concise, domain agnostic and better readable tests.
+        </section>
+        <section>
+          <h2>Java classes under test</h2>
           <pre><code data-trim class="java">
 public class SoftwareEngineer {
 
-    public SoftwareEngineer(String name, long phone) {
-        this(name, phone, null);
-    }
+public SoftwareEngineer(String name, long phone) {
+this(name, phone, null);
+}
 
-    public SoftwareEngineer(String name, long phone, URL gitHub) {
-        this.name = name;
-        this.phone = phone;
-        this.gitHub = gitHub;
-    }
+public SoftwareEngineer(String name, long phone, URL gitHub) {
+this.name = name;
+this.phone = phone;
+this.gitHub = gitHub;
+}
 
-    @Override
-    public boolean equals(Object o) {...}
+@Override
+public boolean equals(Object o) {...}
 
-    @Override
-    public int hashCode() {...}
+@Override
+public int hashCode() {...}
 }
           </code></pre>
           <pre><code data-trim class="java">
@@ -843,31 +866,37 @@ public interface YellowPages {
         </section>
 
         <section>
-          <h2>Groovy: Coercion &amp; Mocking</h2>
+          <h2>Coercion &amp; Mocking</h2>
           <pre><code data-trim class="groovy">
 @Test
 public void typeCoercion() {
-    // SoftwareEngineer via implicit and URL via explicit Coercion
-    SoftwareEngineer engineer = ["Frank", 1234567890, ["https://github.com/frankwis"] as URL]
-    assertThat engineer, is(equalTo(new SoftwareEngineer("Frank", 1234567890, new URL("https://github.com/frankwis"))))
+// SoftwareEngineer via implicit and URL via explicit Coercion
+SoftwareEngineer engineer = ["Frank", 1234567890,
+                             ["https://github.com/frankwis"] as URL]
+
+assertThat engineer,
+    is(equalTo(new SoftwareEngineer("Frank", 1234567890,
+            new URL("https://github.com/frankwis"))))
 }
           </code></pre>
-          <pre><code data-trim class="groovy">
+          <pre class="fragment"><code data-trim class="groovy">
 @Test
 public void mocking() {
-    def engineer = ["John Doe", 1234] as SoftwareEngineer
+def engineer = ["John Doe", 1234] as SoftwareEngineer
 
-    def closureCoercedService = { UUID id -> engineer } as YellowPages
-    assertThat closureCoercedService.getEngineer(randomUUID()), is(equalTo(new SoftwareEngineer("John Doe", 1234)))
+def closureCoercedService = { UUID id -> engineer } as YellowPages
+assertThat closureCoercedService.getEngineer(randomUUID()),
+    is(equalTo(new SoftwareEngineer("John Doe", 1234)))
 
-    def mapCoercedService = [getEngineer: { UUID id -> engineer }] as YellowPages
-    assertThat mapCoercedService.getEngineer(randomUUID()), is(equalTo(new SoftwareEngineer("John Doe", 1234)))
+def mapCoercedService = [getEngineer: { UUID id -> engineer }] as YellowPages
+assertThat mapCoercedService.getEngineer(randomUUID()),
+    is(equalTo(new SoftwareEngineer("John Doe", 1234)))
 }
           </code></pre>
         </section>
 
         <section>
-          <h2>Groovy: Beans &amp; Domain agnostic</h2>
+          <h2>Domain Independence</h2>
           <pre><code data-trim class="groovy">
 @EqualsAndHashCode
 class Engineers {
@@ -875,7 +904,7 @@ class Engineers {
     SoftwareEngineer[] tutors;
 }
           </code></pre>
-          <pre><code data-trim class="groovy">
+          <pre class="fragment"><code data-trim class="groovy">
 @Test
 public void groovyBean() {
     // explicit
@@ -889,14 +918,14 @@ public void groovyBean() {
 }
           </code></pre>
         </section>
+
       </section>
 
-      <!-- ***** Integration Testing ***** -->
+      <!-- ***** Blackbox Testing ***** -->
       <section>
         <section>
-          <h1>Integration Testing</h1>
+          <h1>Blackbox Testing</h1>
         </section>
-
         <section>
           <h2>Service under test</h2>
           <small>
@@ -942,23 +971,84 @@ public void groovyBean() {
         </section>
 
         <section>
-          <h2>JerseyTest</h2>
-          <p>
-            tbd
-          </p>
+          <h2>RestAssured</h2>
+          <pre class="fragment"><code data-trim class="groovy">
+@Test
+public void postCounter() {
+    UUID id = RestAssured.expect().statusCode(201)
+                  .when().post(host + "/v1/counter")
+                  .thenReturn().body().as(UUID.class)
+
+    assertThat(id, is(notNullValue()))
+
+    // await until counter is available and equals 0
+    await().until({
+        RestAssured
+            .expect().statusCode(200)
+            .when().get(host + "/v1/counter/" + id)
+            .andReturn().as(Integer.class) == 0
+    })
+}
+          </code></pre>
         </section>
 
         <section>
-          <h2>RestAssured</h2>
+          <h2>Traits</h2>
+          <pre><code data-trim class="groovy">
+trait AwaitCounter {
+
+    def await = { baseUrl, id ->
+        def response
+        await().until({
+            response = RestAssured
+                    .expect()
+                    .statusCode(200)
+                    .when()
+                    .get(baseUrl + Constants.Service.COUNTER_PATH + "/" + id)
+                    .andReturn()
+        })
+        response
+    }
+}
+          </code></pre>
           <pre class="fragment"><code data-trim class="groovy">
-given()
-    .param("a", "b")
-    .header("c", "d")
-when()
-    .get("/zahl")
-then()
-    .statusCode(200).
-    .body("x.y", equalTo("42"));
+class PostCounterTest extends BaseTest implements AwaitCounter {
+    @Test
+    public void postCounter() {
+      UUID id = RestAssured.expect().statusCode(201)
+                    .when().post(host + "/v1/counter")
+                    .thenReturn().body().as(UUID.class);
+
+      def response = await(host + "/v1/counter", id)
+      int counter = response.body().as(Integer.class)
+      assertThat(counter, is(equalTo(0)))
+    }
+}
+          </code></pre>
+        </section>
+        <section>
+          <h2>TestRule</h2>
+          <pre><code data-trim class="java">
+public class PingCheck extends ExternalResource {
+
+    public PingCheck(Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+    @Override
+    protected void before() throws Throwable {
+        for (URI baseUrl : configuration.servers) {
+            await().until(() -&gt;
+                    RestAssured.when().get(baseUrl.resolve("/ping"))
+                            .then().assertThat()
+                            .statusCode(200).and().body(is(equalTo("pong")))
+            );
+        }
+    }
+
+    @Override
+    protected void after() { /** nothing to do right now */ }
+}
           </code></pre>
         </section>
 
@@ -996,7 +1086,7 @@ class SimpleTest : Spek({
           </code></pre>
         </section>
         <section>
-          <h3>RestAssured &amp; Spock</h3>
+          <h3>Spock: <code>given</code></h3>
           <pre class="fragment"><code data-trim class="groovy">
 given: "A counter has been create and its UUID is known"
     def uuid = RestAssured
@@ -1017,8 +1107,8 @@ and: "A Patch object exists"
           </code></pre>
         </section>
         <section>
-          <h3>RestAssured &amp; Spock</h3>
-          <pre class="fragment"><code data-trim class="groovy">
+          <h3>Spock: <code>when/then</code></h3>
+          <pre><code data-trim class="groovy">
 when: "The counter is being patched"
     def response = RestAssured
         .given()
@@ -1037,40 +1127,6 @@ and: "The counter has been updated by 42"
         .then()
             .assertThat().body(equalTo("42"))
           </code></pre>
-        </section>
-      </section>
-      <!-- ***** Functional Testing ***** -->
-      <section>
-        <section>
-          <h1>Functional Testing</h1>
-          <p>
-            tbd
-          </p>
-        </section>
-
-        <section>
-          <h2>Groovy</h2>
-          <p>
-            tbd
-          </p>
-        </section>
-        <section>
-
-
-
-          <h3>Coercion for Java POJOs</h3>
-          <pre class="fragment"><code data-trim class="java">
-def patch = ["add", "path", 42] as Patch // explicit coercion
-Patch patch = ["add", "path", 42]        // implicit coercion
-def patch = new Patch("add", "path", 42) // default invocation
-          </code></pre>
-        </section>
-
-        <section>
-          <h2>Spock</h2>
-          <p>
-            tbd
-          </p>
         </section>
       </section>
 
