@@ -1119,7 +1119,7 @@ trait AwaitCounter {
                     .expect()
                     .statusCode(200)
                     .when()
-                    .get(baseUrl + Constants.Service.COUNTER_PATH + "/" + id)
+                    .get(baseUrl + "/v1/counter/" + id)
                     .andReturn()
         })
         response
@@ -1134,7 +1134,7 @@ class PostCounterTest extends BaseTest implements AwaitCounter {
                     .when().post(host + "/v1/counter")
                     .thenReturn().body().as(UUID.class);
 
-      def response = await(host + "/v1/counter", id)
+      def response = await(host, id)
       int counter = response.body().as(Integer.class)
       assertThat(counter, is(equalTo(0)))
     }
@@ -1144,21 +1144,21 @@ class PostCounterTest extends BaseTest implements AwaitCounter {
         <section>
           <h2>TestRule</h2>
           <pre><code data-trim class="java">
-public class PingCheck extends ExternalResource {
+class PingCheck extends ExternalResource {
 
-    public PingCheck(Configuration configuration) {
-        this.configuration = configuration;
-    }
+    public PingCheck(Configuration configuration) {...}
 
     @Override
     protected void before() throws Throwable {
         for (URI baseUrl : configuration.servers) {
-            await().until(() -&gt;
-                    RestAssured.when().get(baseUrl.resolve("/ping"))
-                            .then().assertThat()
-                            .statusCode(200).and().body(is(equalTo("pong")))
-            );
+            await().until({
+                RestAssured.when().get(baseUrl.resolve("/ping"))
+                        .then().assertThat()
+                        .statusCode(200).and().body(is(equalTo("pong")))
+            })
         }
+
+        logger.info("Nodes {} are available", configuration.servers)
     }
 
     @Override
@@ -1205,42 +1205,45 @@ class SimpleTest : Spek({
           <pre class="fragment"><code data-trim class="groovy">
 given: "A counter has been create and its UUID is known"
     def uuid = RestAssured
-     .expect()
-        .statusCode(201)
-     .when()
-        .post(baseUrl + COUNTER_PATH)
-     .andReturn()
-        .as(UUID.class)
+            .expect()
+                .statusCode(201)
+            .when()
+                .post(baseUrl + COUNTER_PATH)
+            .andReturn()
+                .as(UUID.class)
           </code></pre>
           <pre class="fragment"><code data-trim class="groovy">
 and: "A Patch object exists"
     def patchTo = [
-                      "op"   : "add",
-                      "path" : "path",
-                      "value": "42"
-                  ]
+            "op"   : "add",
+            "path" : "path",
+            "value": "42"
+    ]
           </code></pre>
         </section>
         <section>
-          <h3>Spock: <code>when/then</code></h3>
+          <h3>Spock: <code>when/then/where</code></h3>
           <pre><code data-trim class="groovy">
 when: "The counter is being patched"
     def response = RestAssured
-        .given()
-            .contentType(Constants.Service.ACCEPT_JSON_HEADER)
+            .given()
+            .contentType(ACCEPT_JSON_HEADER)
             .body(patchTo)
-        .patch(baseUrl + COUNTER_PATH + "/" + uuid)
+            .patch(baseUrl + COUNTER_PATH + "/" + uuid)
           </code></pre>
           <pre class="fragment"><code data-trim class="groovy">
 then: "The Patch request has status code 204"
     assertThat(response.statusCode, is(204))
 
 and: "The counter has been updated by 42"
-    RestAssured.given()
-        .when()
-            .get(baseUrl + COUNTER_PATH + "/" + uuid)
-        .then()
-            .assertThat().body(equalTo("42"))
+    await().ignoreExceptions().until({
+        RestAssured.when().get(baseUrl + COUNTER_PATH + "/" + uuid)
+                .then().assertThat().body(equalTo("42"))
+    })
+          </code></pre>
+          <pre class="fragment"><code data-trim class="groovy">
+where:
+    baseUrl << CONFIGURATION.servers
           </code></pre>
         </section>
       </section>
