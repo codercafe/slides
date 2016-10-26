@@ -822,12 +822,116 @@ public class ServerResource extends ExternalResource {
         </section>
 
         <section>
-          <h2>JerseyTest</h2>
-          <p>
-            tbd
-          </p>
+          <h2>JAX-RS (Jersey)</h2>
+        </section>
+        <section>
+          <h3>Service under Test</h3>
+          <pre><code data-trim class="java">
+@Path("/hello")
+@Produces(APPLICATION_JSON)
+public class HelloWorld {
+
+    @GET
+    public Hello hello() {
+        return new Hello("World");
+    }
+}
+          </code></pre>
         </section>
 
+        <section>
+          <h3><code>JerseyTest</code></h3>
+          <pre><code data-trim class="java">
+public class HelloWorldTest extends JerseyTest {
+...
+    @Test
+    public void testHelloWorldIndent() throws Exception {
+        String result = target("hello").request().get(String.class);
+        logger.info("Response: {}", result);
+    }
+
+    @Test
+    public void testHelloWorld() throws Exception {
+        Hello hello = target("hello").request().get(Hello.class);
+        assertThat(hello.hello, is(equalTo("World")));
+    }
+}
+          </code></pre>
+        </section>
+        <section>
+          <h3>Configuration</h3>
+          <pre><code data-trim class="java">
+@Override
+protected Application configure() {
+    return new ResourceConfig() {
+        {
+            register(DefaultObjectMapper.class);
+            register(new HelloWorld());
+        }
+    };
+}
+          </code></pre>
+          <p>Also works for JAX-RS components: e.g. <code>ExceptionMapper</code>
+        </section>
+
+        <section>
+          <h3>Beware the <code>ObjectMapper</code>!!!!</h3>
+          <pre class="fragment"><code data-trim class="java">
+  @Override
+  protected void configureClient(ClientConfig config) {
+      JacksonJsonProvider jsonProvider = new JacksonJsonProvider();
+      jsonProvider.setMapper(new ObjectMapperBuilder().build());
+      config.register(jsonProvider);
+  }
+          </code></pre>
+          <p class="fragment">Always register you custom ObjectMapper</p>
+          <pre class="fragment"><code data-trim class="java">
+@Provider
+@Priority(Priorities.ENTITY_CODER - 1)
+@Consumes(APPLICATION_JSON)
+@Produces(APPLICATION_JSON)
+public class DefaultObjectMapper implements ContextResolver&lt;ObjectMapper&gt; {
+
+    private final ObjectMapper defaultObjectMapper = new ObjectMapperBuilder().build();
+
+    @Override
+    public ObjectMapper getContext(Class&lt;?&gt; type) {
+        return defaultObjectMapper;
+    }
+}
+          </code></pre>
+        </section>
+
+        <section>
+          <h3>Beware the Classpath</h3>
+          <pre><code data-trim class="java">
+compile([
+        "javax.ws.rs:javax.ws.rs-api:2.0.1",
+        "org.glassfish.jersey.core:jersey-server:$jerseryVersion",
+        "com.fasterxml.jackson.core:jackson-core:$jacksonVersion",
+        "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
+        "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+])
+
+testCompile([
+        "org.slf4j:slf4j-simple:$slf4jVersion",
+        "org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-jetty:$jerseryVersion",
+        "org.glassfish.jersey.test-framework:jersey-test-framework-core:$jerseryVersion",
+        "org.glassfish.jersey.media:jersey-media-json-jackson:$jerseryVersion"
+])
+          </code></pre>
+        </section>
+
+        <section>
+          <h3>Tools:</h3>
+          <ul>
+            <li class="fragment">Cassandra Unit</li>
+            <li class="fragment">DbUnit</li>
+            <li class="fragment">Kafka/ZooKeeper Helper</li>
+            <li class="fragment">Vagrant, Docker</li>
+            <li class="fragment">...</li>
+          </ul>
+        </section>
       </section>
 
       <!-- ***** Groovy ***** -->
