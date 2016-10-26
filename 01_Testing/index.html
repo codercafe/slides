@@ -837,6 +837,17 @@ public class HelloWorld {
     }
 }
           </code></pre>
+          <pre class="fragment"><code data-trim class="java">
+public class Hello {
+
+    public final String hello;
+
+    @JsonCreator
+    public Hello(@JsonProperty("hello") String hello) {
+        this.hello = hello;
+    }
+}
+          </code></pre>
         </section>
 
         <section>
